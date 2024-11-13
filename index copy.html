@@ -1,27 +1,359 @@
-<!DOCTYPE HTML>
-<html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Popup</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7fa;
+        }
 
+        /* Chat Button */
+        #chat-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        /* Chatbot Container */
+        #chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: none;
+            transition: all 0.3s ease;
+        }
+
+        /* Chatbot Header */
+        #chatbot-header {
+            background-color: #007BFF;
+            color: white;
+            padding: 15px;
+            border-radius: 10px 10px 0 0;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            position: relative;
+        }
+
+        /* Minimize Button */
+        #minimize-button {
+            position: absolute;
+            top: -10px;
+            right: 10px;
+            background-color: transparent;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        /* Expand Button */
+        #expand-button {
+            display: none;
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #007BFF;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Chat History */
+        #chat-history {
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #fafafa;
+            color: #333;
+            border-radius: 8px;
+        }
+
+        .chat-message-container {
+            margin-bottom: 10px;
+        }
+
+        .user-message {
+            color: #007BFF;
+            font-weight: bold;
+        }
+
+        .owner-message {
+            background-color: #f1f1f1;
+            color: #333;
+            border-radius: 0 8px 8px 8px;
+        }
+
+        /* User Input Area */
+        .user-input-area {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            resize: none;
+            font-size: 14px;
+            height: 60px;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Popup (Details Form) Positioned at Bottom Right */
+        #popup2 {
+            position: fixed;
+            bottom: 80px; /* Adjust to position above the chat button */
+            right: 20px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            z-index: 1002;
+            width: 280px;
+            display: none;
+        }
+
+        #popup2 input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
+
+        #popup2 button {
+            margin-top: 20px;
+        }
+
+        /* Popup for Initial Selection */
+        #popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            z-index: 1002;
+            display: none;
+        }
+
+        .popup-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        #popup-button, #popup-button1, #popup-button2 {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        #popup-button:hover, #popup-button1:hover, #popup-button2:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
 <body>
+    <!-- Chat Button -->
+    <button id="chat-button">💬</button>
 
-  <p>Before the script...</p>
+    <!-- Chat Popup -->
+    <div id="popup">
+        <div class="popup-buttons">
+            <button id="popup-button">Open Chat</button>
+            <button id="popup-button1">WhatsApp</button>
+            <button id="popup-button2">Chat with Bot</button>
+        </div>
+    </div>
 
-  <script>
-   function Person(fName,lName){
-this.firstName=fName,
-this.lastName=lName
-}
-Person.prototype.gener='male'
-const person=new Person('aaa','bbb')
-console.log(person)
-console.log(person.gener)
+    <!-- Chatbot Form (User details) -->
+    <div id="popup2">
+        <!-- New simple input field added here -->
+        <input type="text" id="extra-input" placeholder="Your message here" />
+        <p>Please enter your details:</p>
+        <input type="text" id="name-input" placeholder="Enter your name" />
+        <input type="email" id="email-input" placeholder="Enter your email" />
+        <button id="popup2-button">Start Chat</button>
+    </div>
 
-// app.listen(process.env.PORT || 9001, () => {
-//     console.log('Server is running');
-// });
-  </script>
+    <!-- Chatbot Container -->
+    <div id="chatbot-container">
+        <div id="chatbot-header">
+            Chat with Us
+            <button id="minimize-button">-</button>
+            <button id="expand-button">Expand</button>
+        </div>
+        <div id="chat-history" class="hidden"></div>
+        <div class="user-input-area">
+            <textarea id="user-reply" placeholder="Type your reply..."></textarea>
+            <button id="send-reply">Send</button>
+        </div>
+    </div>
 
-  <p>...After the script.</p>
+    <script>
+        (function () {
+            const chatbotContainer = document.getElementById("chatbot-container");
+            const chatButton = document.getElementById("chat-button");
+            const popup = document.getElementById("popup");
+            const popupButton = document.getElementById("popup-button");
+            const popupButton1 = document.getElementById("popup-button1");
+            const popupButton2 = document.getElementById("popup-button2");
+            const popup2 = document.getElementById("popup2");
+            const popup2Button = document.getElementById("popup2-button");
+            const nameInput = document.getElementById("name-input");
+            const emailInput = document.getElementById("email-input");
+            const userReply = document.getElementById("user-reply");
+            const sendReplyButton = document.getElementById("send-reply");
+            const chatHistory = document.getElementById("chat-history");
+            const minimizeButton = document.getElementById("minimize-button");
+            const expandButton = document.getElementById("expand-button");
+            const extraInput = document.getElementById("extra-input");
 
+            let isMinimized = false;
+
+            // Open Chat Popup
+            chatButton.onclick = () => {
+                popup.style.display = 'block';
+                chatButton.style.display = 'none';
+            };
+
+            // Popup Button Actions
+            popupButton.onclick = () => {
+                popup.style.display = 'none';
+                chatbotContainer.style.display = 'block';
+            };
+
+            popupButton1.onclick = () => {
+                window.open('https://wa.me/923189391781', '_blank');
+            };
+
+            popupButton2.onclick = () => {
+                popup.style.display = 'none';
+                popup2.style.display = 'block';
+            };
+
+            // Start Chat after user enters details
+            popup2Button.onclick = () => {
+                const name = nameInput.value;
+                const email = emailInput.value;
+
+                if (!name || !email) {
+                    alert("Please fill in both fields.");
+                    return;
+                }
+
+                popup2.style.display = 'none';
+                chatbotContainer.style.display = 'block';
+                chatHistory.innerHTML += `<div class="chat-message-container bot"><div class="chat-message owner-message"><strong>Bredware CRM:</strong> Hello, ${name}! How can we help you today?</div></div>`;
+            };
+
+            // Minimize/Expand Chat Window
+            minimizeButton.onclick = () => {
+                if (isMinimized) {
+                    chatbotContainer.style.height = 'auto';
+                    expandButton.style.display = 'none';
+                    chatHistory.style.display = 'block';
+                } else {
+                    chatbotContainer.style.height = '50px';
+                    chatHistory.style.display = 'none';
+                    expandButton.style.display = 'block';
+                }
+                isMinimized = !isMinimized;
+            };
+
+            expandButton.onclick = () => {
+                chatbotContainer.style.height = 'auto';
+                expandButton.style.display = 'none';
+                chatHistory.style.display = 'block';
+                isMinimized = false;
+            };
+
+            // Send Reply
+            sendReplyButton.onclick = () => {
+                const userMessage = userReply.value;
+                if (!userMessage.trim()) return;
+
+                chatHistory.innerHTML += `
+                    <div class="chat-message-container user">
+                        <div class="chat-message user-message"><strong>You:</strong> ${userMessage}</div>
+                    </div>`;
+
+                const botResponse = getBotResponse(userMessage);
+                chatHistory.innerHTML += `
+                    <div class="chat-message-container bot">
+                        <div class="chat-message owner-message"><strong>Bredware CRM:</strong> ${botResponse}</div>
+                    </div>`;
+
+                userReply.value = '';
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            };
+
+            function getBotResponse(userMessage) {
+                const keywordResponses = [
+                    { keywords: ["pricing", "cost"], response: "Our pricing starts at $199 for the basic course." },
+                    { keywords: ["duration"], response: "The course lasts for 6 weeks, with weekly sessions." },
+                    { keywords: ["registration", "sign up"], response: "You can register on our website under the 'Courses' section." },
+                    { keywords: ["support", "help"], response: "We offer 24/7 support via email and chat." },
+                ];
+
+                for (const item of keywordResponses) {
+                    if (item.keywords.some(keyword => userMessage.toLowerCase().includes(keyword))) {
+                        return item.response;
+                    }
+                }
+                return "I'm sorry, I didn't understand that. Can you please rephrase?";
+            }
+        })();
+    </script>
 </body>
-
 </html>
