@@ -218,11 +218,15 @@
 
     <!-- Chatbot Form (User details) -->
     <div id="popup2">
-        <!-- New simple input field added here -->
-        <input type="text" id="extra-input" placeholder="Your message here" />
         <p>Please enter your details:</p>
-        <input type="text" id="name-input" placeholder="Enter your name" />
-        <input type="email" id="email-input" placeholder="Enter your email" />
+        <div>
+            <label for="name-input">Name</label>
+            <input type="text" id="name-input" placeholder="Enter your name" />
+        </div>
+        <div>
+            <label for="email-input">Email</label>
+            <input type="email" id="email-input" placeholder="Enter your email" />
+        </div>
         <button id="popup2-button">Start Chat</button>
     </div>
 
@@ -233,7 +237,7 @@
             <button id="minimize-button">-</button>
             <button id="expand-button">Expand</button>
         </div>
-        <div id="chat-history" class="hidden"></div>
+        <div id="chat-history"></div>
         <div class="user-input-area">
             <textarea id="user-reply" placeholder="Type your reply..."></textarea>
             <button id="send-reply">Send</button>
@@ -257,7 +261,6 @@
             const chatHistory = document.getElementById("chat-history");
             const minimizeButton = document.getElementById("minimize-button");
             const expandButton = document.getElementById("expand-button");
-            const extraInput = document.getElementById("extra-input");
 
             let isMinimized = false;
 
@@ -270,7 +273,7 @@
             // Popup Button Actions
             popupButton.onclick = () => {
                 popup.style.display = 'none';
-                chatbotContainer.style.display = 'block';
+                popup2.style.display = 'block';
             };
 
             popupButton1.onclick = () => {
