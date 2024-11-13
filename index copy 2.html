@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Popup</title>
+    <style>
+        .chat-message-container {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .chat-message-container.user {
+            justify-content: flex-end;
+        }
+
+        .chat-message-container.bot {
+            justify-content: flex-start;
+        }
+
+        #chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: none;
+            z-index: 1000;
+            transition: height 0.3s ease;
+        }
+
+        #chat-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 50%;
+            font-size: 16px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        #chatbot-header {
+            background-color: #007BFF;
+            color: white;
+            padding: 15px;
+            border-radius: 10px 10px 0 0;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            position: relative;
+        }
+
+        #minimize-button {
+            position: absolute;
+            top: -10px;
+            right: 10px;
+            background-color: transparent;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .chatbot-form, .chat-history {
+            padding: 20px;
+        }
+
+        #chat-history {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 10px;
+            background-color: #fafafa;
+            color: #333;
+        }
+
+        .user-message {
+            color: #007BFF;
+            font-weight: bold;
+        }
+
+        .owner-message {
+            background-color: #f1f1f1;
+            color: #333;
+            text-align: left;
+            border-radius: 0 8px 8px 8px;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        input[type="text"], input[type="email"], textarea {
+            width: 95%;
+            padding: 10px;
+            margin-top: 8px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+            background-color: #f9f9f9;
+        }
+
+        input[type="text"]:focus, input[type="email"]:focus, textarea:focus {
+            outline: none;
+            border-color: #007BFF;
+            background-color: #fff;
+        }
+
+        textarea {
+            height: 60px;
+            resize: none;
+            width: 95%;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #expand-button {
+            display: none;
+            margin: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        #user-reply {
+            width: 93%;
+            padding: 10px;
+            margin-top: 8px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+            background-color: #f9 ```html
+            f9f9;
+        }
+
+        #popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: none;
+            z-index: 1002;
+        }
+
+        #popup-button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        #popup-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <!-- Chat Button -->
+    <button id="chat-button">💬</button>
+
+    <!-- Popup -->
+    <div id="popup">
+        <p>bbbbb</p>
+        <button id="popup-button">Open Chat</button>
+    </div>
+
+    <!-- Chatbot Container -->
+    <div id="chatbot-container">
+        <div id="chatbot-header">
+            Chat with Us
+            <button id="expand-button">Expand</button>
+            <button id="minimize-button">-</button>
+        </div>
+        <div class="chatbot-form">
+            <form id="user-chat-form">
+                <div>
+                    <label for="user-name">Name:</label>
+                    <input type="text" id="user-name" required placeholder="Enter your name" />
+                </div>
+                <div>
+                    <label for="user-email">Email:</label>
+                    <input type="email" id="user-email" required placeholder="Enter your email" />
+                </div>
+                <div>
+                    <label for="user-message">Message:</label>
+                    <textarea id="user-message" required placeholder="Type your message..."></textarea>
+                </div>
+                <button type="submit">Start Chat</button>
+            </form>
+        </div>
+        <div id="chat-history" class="hidden"></div>
+        <div id="user-reply-container" class="hidden">
+            <textarea id="user-reply" placeholder="Type your reply..." width="50"></textarea>
+            <button id="send-reply">Send</button>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const chatbotContainer = document.getElementById("chatbot-container");
+            const chatButton = document.getElementById("chat-button");
+            const chatHistory = document.getElementById("chat-history");
+            const userChatForm = document.getElementById("user-chat-form");
+            const userReplyContainer = document.getElementById("user-reply-container");
+            const userReply = document.getElementById("user-reply");
+            const sendReplyButton = document.getElementById("send-reply");
+            const minimizeButton = document.getElementById("minimize-button");
+            const expandButton = document.getElementById("expand-button");
+            const popup = document.getElementById("popup");
+            const popupButton = document.getElementById("popup-button");
+            let isMinimized = false;
+
+            chatButton.onclick = () => {
+                popup.style.display = 'block';
+            };
+
+            popupButton.onclick = () => {
+                popup.style.display = 'none';
+                chatbotContainer.style.display = 'block';
+                chatHistory.classList.add("hidden");
+                userChatForm.classList.remove("hidden");
+                userChatForm.reset();
+                isMinimized = false;
+            };
+
+            minimizeButton.onclick = () => {
+                if (!isMinimized) {
+                    chatbotContainer.style.height = '50px';
+                    chatHistory.classList.add("hidden");
+                    userChatForm.classList.add("hidden");
+                    userReplyContainer.classList.add("hidden");
+                    minimizeButton.innerText = '+';
+                    expandButton.style.display = 'block';
+                } else {
+                    chatbotContainer.style.height = 'auto';
+                    userChatForm.classList.toggle("hidden", !userChatForm.classList.contains("hidden"));
+                    userReplyContainer.classList.toggle("hidden", !userReplyContainer.classList.contains("hidden"));
+                    chatHistory.classList.remove("hidden");
+                    minimizeButton.innerText = '-';
+                    expandButton.style.display = 'none';
+                }
+                isMinimized = !isMinimized;
+            };
+
+            expandButton.onclick = () => {
+                chatbotContainer.style.height = 'auto';
+                userChatForm.classList.toggle("hidden", !userChatForm.classList .contains("hidden"));
+                userReplyContainer.classList.toggle("hidden", !userReplyContainer.classList.contains("hidden"));
+                chatHistory.classList.remove("hidden");
+                minimizeButton.innerText = '-';
+                expandButton.style.display = 'none';
+                isMinimized = false;
+            };
+
+            userChatForm.onsubmit = async function (e) {
+                e.preventDefault();
+                const name = document.getElementById("user-name").value;
+                const email = document.getElementById("user-email").value;
+                const message = document.getElementById("user-message").value;
+                const userID = "User _ID";
+                const sessionID = Date.now().toString();
+
+                try {
+                    const response = await fetch('https://Bredware CRM.onrender.com/api/chatbot/submitChat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ name, email, message, userID, sessionID }),
+                    });
+
+                    if (response.ok) {
+                        userChatForm.style.display = "none";
+                        chatHistory.innerHTML += `<p class="owner-message"><strong>Bredware CRM:</strong> Welcome, ${name}! How can I assist you today?</p>`;
+                        chatHistory.classList.remove("hidden");
+                        userReplyContainer.classList.remove("hidden");
+                        userReply.focus();
+                    } else {
+                        console.error('Error submitting data:', response.statusText);
+                    }
+                } catch (error) {
+                    console.error('Error submitting data:', error);
+                }
+            };
+
+            sendReplyButton.onclick = function () {
+                const userMessage = userReply.value;
+                if (userMessage.trim() === '') return;
+
+                chatHistory.innerHTML += `
+                    <div class="chat-message-container user">
+                        <div class="chat-message user-message"><strong>You:</strong> ${userMessage}</div>
+                    </div>`;
+
+                const botResponse = getBotResponse(userMessage);
+                chatHistory.innerHTML += `
+                    <div class="chat-message-container bot">
+                        <div class="chat-message owner-message"><strong>Bredware CRM:</strong> ${botResponse}</div>
+                    </div>`;
+
+                userReply.value = '';
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            };
+
+            function getBotResponse(userMessage) {
+                const keywordResponses = {
+                    keywords: [
+                        { keywords: ["pricing", "cost"], response: "Our pricing starts at $199 for the basic course." },
+                        { keywords: ["duration"], response: "The course lasts for 6 weeks, with weekly sessions." },
+                        { keywords: ["registration", "sign up"], response: "You can register on our website under the 'Courses' section." },
+                        { keywords: ["support", "help"], response: "We offer 24/7 support via email and chat." },
+                    ],
+                };
+
+                for (const item of keywordResponses.keywords) {
+                    if (item.keywords.some(keyword => userMessage.toLowerCase().includes(keyword))) {
+                        return item.response;
+                    }
+                }
+                return "I'm sorry, I didn't understand that. Can you please rephrase?";
+            }
+        })();
+    </script>
+</body>
+</html>

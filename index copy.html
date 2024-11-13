@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<html>
+
+<body>
+
+  <p>Before the script...</p>
+
+  <script>
+   function Person(fName,lName){
+this.firstName=fName,
+this.lastName=lName
+}
+Person.prototype.gener='male'
+const person=new Person('aaa','bbb')
+console.log(person)
+console.log(person.gener)
+
+// app.listen(process.env.PORT || 9001, () => {
+//     console.log('Server is running');
+// });
+  </script>
+
+  <p>...After the script.</p>
+
+</body>
+
+</html>
