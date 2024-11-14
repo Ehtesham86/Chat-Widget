@@ -297,7 +297,7 @@
 
                 popup2.style.display = 'none';
                 chatbotContainer.style.display = 'block';
-                chatHistory.innerHTML += `<div class="chat-message-container bot"><div class="chat-message owner-message"><strong> CRM:</strong> Hello, ${name}! How can we help you today?</div></div>`;
+                chatHistory.innerHTML += `<div class="chat-message-container bot"><div class="chat-message owner-message"><strong>Bredware CRM:</strong> Hello, ${name}! How can we help you today?</div></div>`;
             };
 
             // Minimize/Expand Chat Window
@@ -334,7 +334,7 @@
                 const botResponse = getBotResponse(userMessage);
                 chatHistory.innerHTML += `
                     <div class="chat-message-container bot">
-                        <div class="chat-message owner-message"><strong> CRM:</strong> ${botResponse}</div>
+                        <div class="chat-message owner-message"><strong>Bredware CRM:</strong> ${botResponse}</div>
                     </div>`;
 
                 userReply.value = '';
